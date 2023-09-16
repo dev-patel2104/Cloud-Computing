@@ -7,13 +7,13 @@ exports.validate = async (req, res) => {
         const body = req.body;
         console.log(req.body);
         if (body.file == null || body.file.trim() === '') {
-            return res.status(200).json({ file: null, error: "Invalid JSON input" });
+            return res.status(200).json({ file: null, error: "Invalid JSON input." });
         }
 
         const fileName = body.file;
         const filePath = '/app/data/' + fileName;
         if (!fs.existsSync(filePath)) {
-            return res.status(200).json({ error: "file not found" });
+            return res.status(200).json({ file: fileName, error: "File not found." });
         }
 
 
@@ -29,7 +29,7 @@ exports.validate = async (req, res) => {
             const line = lines[i];
             const words = line.split(',');
             if (words.length < 4) {
-                return res.status(200).json({ file: fileName, error: "Input file not in CSV format" });
+                return res.status(200).json({ file: fileName, error: "Input file not in CSV format." });
             }
             if (i === 0) {
                 nameIndex = words.indexOf("name");

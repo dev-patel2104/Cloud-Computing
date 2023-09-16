@@ -24,19 +24,19 @@ exports.validate = async (req, res) => {
 
         }
         if (body.file == null || body.file.trim() === '') {
-            return res.status(200).json({ file: null, error: "Invalid JSON input" });
+            return res.status(200).json({ file: null, error: "Invalid JSON input." });
         }
 
         const fileName = body.file;
         const filePath = '/app/data/' + fileName;
         if (!fs.existsSync(filePath)) {
-            return res.status(200).json({ error: "file not found" });
+            return res.status(200).json({ file : fileName, error: "File not found." });
         }
 
 
         const fileContents = fs.readFileSync(filePath, 'utf8');
 
-        const lines = fileContents.split('\n');
+        const lines = fileContents.split('\r\n');
         let nameIndex = -1;
         let latIndex = -1;
         let longIndex = -1;
@@ -47,7 +47,7 @@ exports.validate = async (req, res) => {
             const line = lines[i];
             const words = line.split(',');
             if (words.length < 4) {
-                return res.status(200).json({ file: fileName, error: "Input file not in CSV format" });
+                return res.status(200).json({ file: fileName, error: "Input file not in CSV format." });
             }
             if (i === 0) {
 
