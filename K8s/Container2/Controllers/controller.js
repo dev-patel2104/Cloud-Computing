@@ -7,12 +7,13 @@ exports.getTemp = async (req, res) => {
         const fileName = body.file;
         const name = body.name;
  
-        if(fileName === null || fileName.trim() === "" || fileName === undefined)
+        // added checks to see whether the file name is present or not
+        if(fileName === undefined || fileName === null || fileName.trim() === "")
         {
             return res.status(500).json({ file: null, error: "Invalid JSON input." });
         }
 
-        const filePath = './Dev_PV_dir/' + fileName;
+        const filePath = '/Dev_PV_dir/' + fileName;
 
         if (!fs.existsSync(filePath)) {
             return res.status(200).json({ file : fileName, error: "File not found." });
@@ -21,6 +22,7 @@ exports.getTemp = async (req, res) => {
         const fileContents = fs.readFileSync(filePath, 'utf8');
 
         const lines = fileContents.split('\n');
+        const requiredWords = ['name', 'latitude', 'longitude', 'temperature'];
         let nameIndex = -1;
         let tempIndex = -1;
         let tempVal;
@@ -34,6 +36,11 @@ exports.getTemp = async (req, res) => {
                 return res.status(500).json({ file: fileName, error: "Input file not in CSV format." });
             }
             if (i === 0) {
+                const hasAllWords = requiredWords.every(word => line.includes(word));
+                if(hasAllWords == false)
+                {
+                    return res.status(500).json({ file: fileName, error: "Input file not in CSV format." });
+                }
                 nameIndex = updatedWords.indexOf("name");
                 tempIndex = updatedWords.indexOf("temperature");
             }

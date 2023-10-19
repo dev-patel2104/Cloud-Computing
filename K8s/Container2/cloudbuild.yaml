@@ -1,0 +1,21 @@
+steps:
+
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['build', '-t', 'northamerica-northeast1-docker.pkg.dev/k8s-assignment-402302/cloud-computing/app2:1.4', '.']
+  
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['push', 'northamerica-northeast1-docker.pkg.dev/k8s-assignment-402302/cloud-computing/app2:1.4']
+
+  - name: 'gcr.io/cloud-builders/kubectl'
+    args: ['apply', '-f', 'deployment.yaml']
+    env: 
+      - 'CLOUDSDK_COMPUTE_REGION=northamerica-northeast1-a'
+      - 'CLOUDSDK_CONTAINER_CLUSTER=first-gke-cluster'
+      - 'CLOUDSDK_CORE_PROJECT=k8s-assignment-402302'
+  
+  - name: 'gcr.io/cloud-builders/kubectl'
+    args: ['apply', '-f', 'app2-service.yaml']
+    env: 
+      - 'CLOUDSDK_COMPUTE_REGION=northamerica-northeast1-a'
+      - 'CLOUDSDK_CONTAINER_CLUSTER=first-gke-cluster'
+      - 'CLOUDSDK_CORE_PROJECT=k8s-assignment-402302'

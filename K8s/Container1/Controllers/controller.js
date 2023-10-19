@@ -13,7 +13,7 @@ exports.store = async (req, res) => {
             return res.status(500).json({file:null, error: "Invalid JSON input."});
         }
 
-        const filePath = './Dev_PV_dir/' + fileName;
+        const filePath = '/Dev_PV_dir/' + fileName;
         const data = body.data;
         
         fs.writeFile(filePath, data, (err) => {
@@ -24,7 +24,7 @@ exports.store = async (req, res) => {
             }
 
             console.log("file written successfully");
-            res.status(200).json();
+            res.status(200).json({ file : fileName, message: "Success."});
         });
         
         // if (body.key === "temperature") {
@@ -104,10 +104,10 @@ exports.getTemp = async (req,res) => {
         {
             return res.status(500).json({ file: null, error: "Invalid JSON input." });
         }
-        const filePath = './Dev_PV_dir/' + fileName;
-        if (!fs.existsSync(filePath)) {
-            return res.status(200).json({ file : fileName, error: "File not found." });
-        }
+        // const filePath = './Dev_PV_dir/' + fileName;
+        // if (!fs.existsSync(filePath)) {
+        //     return res.status(200).json({ file : fileName, error: "File not found." });
+        // }
 
         const postOptions = {
                     method: 'POST',
@@ -119,7 +119,7 @@ exports.getTemp = async (req,res) => {
                 
                 console.log("Sending to the second container");
     
-                const response = await fetch(`http://localhost:3000/get-temp`, postOptions);
+                const response = await fetch(`http://app2-service.assignment.svc.cluster.local:3000/get-temp`, postOptions);
                 const data = await response.json();
                 return res.status(200).json(data);
 
