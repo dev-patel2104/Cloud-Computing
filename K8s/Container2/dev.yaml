@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
         - name: app2
-          image: northamerica-northeast1-docker.pkg.dev/k8s-assignment-402302/cloud-computing/app2:1.4
+          image: northamerica-northeast1-docker.pkg.dev/k8s-assignment-402302/cloud-computing/app2:5.0
           ports:
             - containerPort: 3000
           volumeMounts:
@@ -25,3 +25,18 @@ spec:
         - name: my-volume
           persistentVolumeClaim:
             claimName: my-pvc
+
+---
+
+apiVersion : v1
+kind : Service
+metadata : 
+  name: app2-service
+  namespace : assignment
+spec : 
+  selector:
+    app: app2
+  ports:
+    - protocol: TCP
+      port: 3000
+      targetPort: 3000

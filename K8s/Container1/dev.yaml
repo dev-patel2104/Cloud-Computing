@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
         - name: app1
-          image: northamerica-northeast1-docker.pkg.dev/k8s-assignment-402302/cloud-computing/app1:1.2
+          image: northamerica-northeast1-docker.pkg.dev/k8s-assignment-402302/cloud-computing/app1:5.0
           ports:
             - containerPort: 6000
           volumeMounts:
@@ -25,3 +25,19 @@ spec:
         - name: my-volume
           persistentVolumeClaim:
             claimName: my-pvc
+
+---
+
+apiVersion : v1
+kind : Service
+metadata : 
+  name: app1-service
+  namespace : assignment
+spec : 
+  type: LoadBalancer
+  selector:
+    app: app1
+  ports:
+    - protocol: TCP
+      port: 6000
+      targetPort: 6000
