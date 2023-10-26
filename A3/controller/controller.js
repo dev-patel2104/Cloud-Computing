@@ -7,6 +7,7 @@ exports.storeProducts = async (req, res) => {
       return res.status(400).json({ message: "Invalid request. Please provide an array of products." });
     }
 
+    console.log("trying to insert values into the database");
     const insertQuery = "INSERT INTO products (name, price, availability) VALUES ?";
     const values = products.map((product) => [
       product.name,
@@ -30,6 +31,7 @@ exports.storeProducts = async (req, res) => {
 
 exports.listProducts = async (req, res) => {
   try {
+    console.log("trying to fetch the values from the database");
     db.query("SELECT * FROM products", (err, results) => {
       if (err) {
         console.error("Error executing query: ", err);
