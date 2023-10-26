@@ -23,7 +23,7 @@ exports.storeProducts = async (req, res) => {
         res.json({ message: "Products stored successfully." });
       }
     });
-    res.status(200).json({message: "Stored successfully"});
+    //res.status(200).json({message: "Stored successfully"});
   } catch (error) {
     res.status(500).send({ message: "Internal Server Error.", error: error });
   }
@@ -46,7 +46,7 @@ exports.listProducts = async (req, res) => {
       }
     });
 
-    res.status(200).json({message: "fetched successfully"});
+    //res.status(200).json({message: "fetched successfully"});
   } catch (error) {
     res.status(500).send({ message: "Internal Server Error.", error: error });
   }
