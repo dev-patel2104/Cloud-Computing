@@ -1,5 +1,13 @@
 const db = require("../db/db");
 
+const postOptions = {
+  method: 'POST',
+  headers: {
+    'Content-Type': 'application/json',
+  },
+  body: ""
+};
+
 exports.storeProducts = async (req, res) => {
   try {
     const products = req.body.products;
@@ -31,22 +39,35 @@ exports.storeProducts = async (req, res) => {
 
 exports.listProducts = async (req, res) => {
   try {
-    console.log("trying to fetch the values from the database");
-    db.query("SELECT * FROM products", (err, results) => {
-      if (err) {
-        console.error("Error executing query: ", err);
-        res.status(500).send({ message: "Internal Server Error.", error: err });
-      } else {
-        const transformedResults = results.map((product) => ({
-          name: product.name,
-          price: product.price,
-          availability: product.availability === 1 ? true : false,
-        }));
-        res.json({ products: transformedResults });
-      }
-    });
+    let transformedResults;
+    const response = await fetch('http://3.87.235.144:6000/list-products');
+    const data = response.json();
 
-    //res.status(200).json({message: "fetched successfully"});
+    if (response.status === 200) {
+      console.log("You are getting the following response from the cache");
+      res.status(200).json({ products: data });
+    }
+    else if (response.status === 204) {
+      db.query("SELECT * FROM products", (err, results) => {
+        if (err) {
+          console.error("Error executing query: ", err);
+          res.status(500).send({ message: "Internal Server Error.", error: err });
+        } else {
+            transformedResults = results.map((product) => ({
+            name: product.name,
+            price: product.price,
+            availability: product.availability === 1 ? true : false,
+          }));
+          
+        }
+      });
+
+      postOptions.body = JSON.stringify(transformedResults);
+      const out = await fetch('http://3.87.235.144/store-products', postOptions);
+      const res = out.json();
+      res.json({ products: transformedResults});    
+    }
+
   } catch (error) {
     res.status(500).send({ message: "Internal Server Error.", error: error });
   }
