@@ -40,9 +40,11 @@ exports.storeProducts = async (req, res) => {
 exports.listProducts = async (req, res) => {
   try {
     let transformedResults;
+    console.log("Sending request to redis cache");
     const response = await fetch('http://54.209.193.220:6000/list-products');
     const data = response.json();
-
+    console.log("getting resposne back from the redis cache");
+    
     if (response.status === 200) {
       console.log("You are getting the following response from the cache");
       res.status(200).json({ products: data });
