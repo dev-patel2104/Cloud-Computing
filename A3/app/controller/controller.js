@@ -63,7 +63,7 @@ exports.listProducts = async (req, res) => {
       });
 
       postOptions.body = JSON.stringify(transformedResults);
-      const out = await fetch('http://3.87.235.144/store-products', postOptions);
+      const out = await fetch('http://3.87.235.144:6000/store-products', postOptions);
       const res = out.json();
       res.json({ products: transformedResults});    
     }
