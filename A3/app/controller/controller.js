@@ -40,7 +40,7 @@ exports.storeProducts = async (req, res) => {
 exports.listProducts = async (req, res) => {
   try {
     let transformedResults;
-    const response = await fetch('http://3.87.235.144:6000/list-products');
+    const response = await fetch('http://54.209.193.220:6000/list-products');
     const data = response.json();
 
     if (response.status === 200) {
@@ -63,7 +63,7 @@ exports.listProducts = async (req, res) => {
       });
 
       postOptions.body = JSON.stringify(transformedResults);
-      const out = await fetch('http://3.87.235.144:6000/store-products', postOptions);
+      const out = await fetch('http://54.209.193.220:6000/store-products', postOptions);
       const res = out.json();
       res.json({ products: transformedResults});    
     }
