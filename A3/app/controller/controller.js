@@ -41,7 +41,7 @@ exports.listProducts = async (req, res) => {
   try {
     let transformedResults;
     console.log("Sending request to redis cache");
-    const response = await fetch('http://54.209.193.220:6000/list-products');
+    const response = await fetch('http://54.92.207.97:6000/list-products');
     const data = response.json();
     console.log("getting resposne back from the redis cache");
     
@@ -65,7 +65,7 @@ exports.listProducts = async (req, res) => {
       });
 
       postOptions.body = JSON.stringify(transformedResults);
-      const out = await fetch('http://54.209.193.220:6000/store-products', postOptions);
+      const out = await fetch('http://54.92.207.97:6000/store-products', postOptions);
       const res = out.json();
       res.json({ products: transformedResults});    
     }
