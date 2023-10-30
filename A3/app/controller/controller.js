@@ -28,7 +28,7 @@ exports.storeProducts = async (req, res) => {
         console.error("Error executing query: ", err);
         res.status(500).send({ message: "Internal Server Error.", error: err });
       } else {
-        res.json({ message: "Products stored successfully." });
+        res.status(200).json({ message: "Success." });
       }
     });
     //res.status(200).json({message: "Stored successfully"});
@@ -39,15 +39,15 @@ exports.storeProducts = async (req, res) => {
 
 exports.listProducts = async (req, res) => {
   try {
-    let transformedResults;
+    let output;
     console.log("Sending request to redis cache");
-    const response = await fetch('http://54.92.207.97:6000/list-products');
+    const response = await fetch('http://52.91.159.163:6000/list-products');
     const data = response.json();
     console.log("getting resposne back from the redis cache");
     
     if (response.status === 200) {
       console.log("You are getting the following response from the cache");
-      res.status(200).json({ products: data });
+      res.status(200).json({ data });
     }
     else if (response.status === 204) {
       db.query("SELECT * FROM products", (err, results) => {
@@ -55,7 +55,7 @@ exports.listProducts = async (req, res) => {
           console.error("Error executing query: ", err);
           res.status(500).send({ message: "Internal Server Error.", error: err });
         } else {
-            transformedResults = results.map((product) => ({
+            output = results.map((product) => ({
             name: product.name,
             price: product.price,
             availability: product.availability === 1 ? true : false,
@@ -64,13 +64,15 @@ exports.listProducts = async (req, res) => {
         }
       });
 
-      postOptions.body = JSON.stringify(transformedResults);
-      const out = await fetch('http://54.92.207.97:6000/store-products', postOptions);
+      postOptions.body = JSON.stringify(output);
+      const out = await fetch('http://52.91.159.163:6000/store-products', postOptions);
       const res = out.json();
-      res.json({ products: transformedResults});    
+      res.status(200).json({ products: output, cache : false});    
     }
 
   } catch (error) {
     res.status(500).send({ message: "Internal Server Error.", error: error });
   }
 };
+
+
