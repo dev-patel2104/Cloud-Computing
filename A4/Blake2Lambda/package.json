@@ -1,0 +1,6 @@
+{
+  "dependencies": {
+    "axios": "^1.6.2",
+    "blake2b": "^2.1.4"
+  }
+}
