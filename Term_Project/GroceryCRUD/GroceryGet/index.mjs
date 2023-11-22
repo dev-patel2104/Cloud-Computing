@@ -7,25 +7,25 @@ const queryAsync = promisify(dynamoDB.send).bind(dynamoDB);
 
 const TABLE_NAME = "GroceryData";
 
-exports.handler = async (event) => {
+export const handler = async (event) => {
   try {
     
-    const user_id = event.queryStringParameters.user_id; 
+    const email = event.queryStringParameters.email; 
 
-    if (!user_id) {
+    if (!email) {
       return {
         statusCode: 400,
         body: JSON.stringify({
-          message: "user_id is required to get the grocery information for the user",
+          message: "email is required to get the grocery information for the user",
         }),
       };
     }
 
     const params = {
       TableName: TABLE_NAME, 
-      KeyConditionExpression: "user_id = :uid", 
+      KeyConditionExpression: "email = :uid", 
       ExpressionAttributeValues: {
-        ":uid": user_id, 
+        ":uid": email, 
       },
     };
 
@@ -36,7 +36,7 @@ exports.handler = async (event) => {
         statusCode: 204,
         body: JSON.stringify({
           message:
-            "No grocery item for the given user_id present in the database",
+            "No grocery item for the given email present in the database",
         }),
       };
     } else {

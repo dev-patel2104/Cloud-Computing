@@ -12,7 +12,7 @@ export const handler = async (event) => {
     
     const req = JSON.parse(event.body);
     
-    if(!req.name || !req.category || !req.expiry_date || !req.quantity || req.status || !req.user_id)
+    if(!req.name || !req.category || !req.expiry_date || !req.quantity || req.status || !req.email)
     {
       return {
         statusCod: 400,
@@ -24,13 +24,13 @@ export const handler = async (event) => {
     const quantity = req.quantity;
     const status = req.status;
     const date = req.expiry_date;    
-    const user_id = req.user_id;
+    const email = req.email;
     
     const uuidValue = uuid();
     const params = {
       TableName: TABLE_NAME,
       Item: {
-        user_id: {S: user_id},
+        email: {S: email},
         name: { S: name },
         grocery_id: { S: uuidValue },
         category: {S: category },

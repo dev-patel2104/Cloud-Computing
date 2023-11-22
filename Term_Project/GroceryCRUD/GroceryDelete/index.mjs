@@ -6,7 +6,7 @@ const deleteItemAsync = promisify(dynamoDB.send).bind(dynamoDB);
 const TABLE_NAME = "GroceryData";
 
 
-exports.handler = async (event) => {
+export const handler = async (event) => {
     try {
         const grocery_id = event.queryStringParameters.grocery_id; 
 
@@ -20,7 +20,7 @@ exports.handler = async (event) => {
         const params = {
             TableName: TABLE_NAME,
             Key: {
-                user_id: user_id,
+                email: email,
                 grocery_id: grocery_id,
             },
             ConditionExpression: `grocery_id = :conditionValue`,

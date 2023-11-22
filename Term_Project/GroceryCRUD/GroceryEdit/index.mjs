@@ -6,11 +6,11 @@ const updateItemAsync = promisify(dynamoDB.send).bind(dynamoDB);
 const TABLE_NAME = "GroceryData";
 
 
-exports.handler = async (event) => {
+export const handler = async (event) => {
     try {
         const req = JSON.parse(event.body);
 
-        if (!req.name || !req.category || !req.expiry_date || !req.quantity || req.status || !req.user_id
+        if (!req.name || !req.category || !req.expiry_date || !req.quantity || req.status || !req.email
             || !req.grocery_id) {
             return {
                 statusCod: 400,
@@ -23,13 +23,13 @@ exports.handler = async (event) => {
         const quantity = req.quantity;
         const status = req.status;
         const date = req.expiry_date;
-        const user_id = req.user_id;
+        const email = req.email;
         const grocery_id = req.grocery_id;
 
         const params = {
             TableName: TABLE_NAME,
             Key: {
-                user_id: user_id,
+                email: email,
                 grocery_id : grocery_id,
             },
             UpdateExpression: `SET name = :newName, category = :newCategory, quantity = :newQuantity, status = :newStatus, expiry_date = :newExpiryDate`,

@@ -24,7 +24,7 @@ Resources:
       Code: 
         S3Bucket: code-b00934576
         S3Key: grocery-get.zip
-
+grto
   GroceryEditLambda:
     Type: AWS::Lambda::Function
     Properties: 
