@@ -2,7 +2,6 @@ import { DynamoDBClient, PutItemCommand } from "@aws-sdk/client-dynamodb";
 import { promisify } from 'util';
 import { uuid } from 'uuidv4';
 
-
 const dynamoDB = new DynamoDBClient({ region: "us-east-1" });
 const putItemAsync = promisify(dynamoDB.send).bind(dynamoDB);
 
