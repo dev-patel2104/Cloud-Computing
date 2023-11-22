@@ -33,7 +33,7 @@ export const handler = async (event) => {
       Item: {
         user_id: {S: user_id},
         name: { S: name },
-        uuid: { S: uuidValue },
+        grocery_id: { S: uuidValue },
         category: {S: category },
         quantity: {S: quantity},
         status: {S: status},

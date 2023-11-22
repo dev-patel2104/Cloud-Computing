@@ -1,6 +1,9 @@
 import { DynamoDBClient, PutItemCommand } from "@aws-sdk/client-dynamodb";
+import { QueryCommand } from "@aws-sdk/client-dynamodb";
+import { promisify } from "util";
 
 const dynamoDB = new DynamoDBClient({ region: "us-east-1" });
+const queryAsync = promisify(dynamoDB.send).bind(dynamoDB);
 
 const TABLE_NAME = "GroceryData";
 
@@ -26,7 +29,7 @@ exports.handler = async (event) => {
       },
     };
 
-    const result = await dynamoDB.query(params).promise();
+    const result = await queryAsync(new QueryCommand(params));
 
     if (!result.Items || !result.Items.length === 0) {
       return {
@@ -39,7 +42,7 @@ exports.handler = async (event) => {
     } else {
       return {
         statusCode: 200,
-        body: JSON.stringify(result.Itemsa),
+        body: JSON.stringify(result.Items),
       };
     }
   } catch (error) {
