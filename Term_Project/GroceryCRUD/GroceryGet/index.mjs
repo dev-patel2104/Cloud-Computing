@@ -1,46 +1,45 @@
-const AWS = require("aws-sdk");
+import { DynamoDBClient, PutItemCommand } from "@aws-sdk/client-dynamodb";
 
-const dynamoDB = new AWS.DynamoDB.DocumentClient();
+const dynamoDB = new DynamoDBClient({ region: "us-east-1" });
+
 const TABLE_NAME = "GroceryData";
 
 exports.handler = async (event) => {
   try {
     
-    const email = event.queryStringParameters.email; //use either query parameter if get call or change to request body for post call
+    const user_id = event.queryStringParameters.user_id; 
 
-    if (!email) {
+    if (!user_id) {
       return {
         statusCode: 400,
         body: JSON.stringify({
-          message: "Email is required to check for user",
+          message: "user_id is required to get the grocery information for the user",
         }),
       };
     }
 
     const params = {
-      TableName: TABLE_NAME,
-      Key: {
-        email: email,
+      TableName: TABLE_NAME, 
+      KeyConditionExpression: "user_id = :uid", 
+      ExpressionAttributeValues: {
+        ":uid": user_id, 
       },
     };
 
-    const result = await dynamoDB.get(params).promise();
+    const result = await dynamoDB.query(params).promise();
 
-    if (!result.Item) {
+    if (!result.Items || !result.Items.length === 0) {
       return {
-        statusCode: 404,
+        statusCode: 204,
         body: JSON.stringify({
           message:
-            "No such email present in the database",
+            "No grocery item for the given user_id present in the database",
         }),
       };
     } else {
       return {
         statusCode: 200,
-        body: JSON.stringify({
-          uuid: result.Item.uuid,
-          email: result.Item.email
-        }),
+        body: JSON.stringify(result.Itemsa),
       };
     }
   } catch (error) {
