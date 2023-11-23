@@ -12,7 +12,7 @@ export const handler = async (event) => {
     
     const req = JSON.parse(event.body);
     
-    if(!req.name || !req.category || !req.expiry_date || !req.quantity || req.status || !req.email)
+    if(!req.name || !req.category || !req.expiry_date || !req.quantity || !req.status || !req.email)
     {
       return {
         statusCod: 400,
@@ -36,7 +36,7 @@ export const handler = async (event) => {
         category: {S: category },
         quantity: {S: quantity},
         status: {S: status},
-        expiry_date: {S: date}
+        expiry_date: {N: date.toString()}
       },
     };
 
@@ -46,7 +46,7 @@ export const handler = async (event) => {
 
     return {
       statusCode: 201, // 201 Created
-      body: JSON.stringify({ message: "User added successfully" }),
+      body: JSON.stringify({ message: "Grocery added successfully" }),
     };
   } catch (error) {
     console.error("Error:", error);

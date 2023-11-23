@@ -9,26 +9,25 @@ const TABLE_NAME = "GroceryData";
 export const handler = async (event) => {
     try {
         const grocery_id = event.pathParameters.grocery_id; 
+        const email = event.queryStringParameters.email;
 
-        if (!grocery_id) {
+        if (!grocery_id || !email) {
             return {
                 statusCod: 400,
-                body: JSON.stringify({ error: "grocery_id is required to know which item to delete" })
+                body: JSON.stringify({ error: "Provide all the necessary input fields is required to know which item to delete" })
             };
         }
 
         const params = {
             TableName: TABLE_NAME,
             Key: {
-                email: email,
-                grocery_id: grocery_id,
+                email: { S: email },
+                grocery_id: { S: grocery_id },
             },
-            ConditionExpression: `grocery_id = :conditionValue`,
-            ExpressionAttributeValues: {
-                ":conditionValue" : grocery_id,
-            },
+            
         }
-
+        
+        console.log(params);
         const data = await deleteItemAsync(new DeleteItemCommand(params));
         console.log("Item delete successfully");
 

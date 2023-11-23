@@ -1,62 +1,57 @@
-import { DynamoDBClient, UpdateItemCommand } from "@aws-sdk/client-dynamodb";
-import {promisify} from 'util';
+import { DynamoDBClient, PutItemCommand } from "@aws-sdk/client-dynamodb";
+import { promisify } from "util";
 
 const dynamoDB = new DynamoDBClient({ region: "us-east-1" });
-const updateItemAsync = promisify(dynamoDB.send).bind(dynamoDB);
+const putItemAsync = promisify(dynamoDB.send).bind(dynamoDB);
 const TABLE_NAME = "GroceryData";
 
-
 export const handler = async (event) => {
-    try {
-        const req = JSON.parse(event.body);
+  try {
+    const req = JSON.parse(event.body);
 
-        if (!req.name || !req.category || !req.expiry_date || !req.quantity || req.status || !req.email
-            || !req.grocery_id) {
-            return {
-                statusCod: 400,
-                body: JSON.stringify({ error: "Not all the available data is present" })
-            };
-        }
-
-        const name = req.name;
-        const category = req.category;
-        const quantity = req.quantity;
-        const status = req.status;
-        const date = req.expiry_date;
-        const email = req.email;
-        const grocery_id = req.grocery_id;
-
-        const params = {
-            TableName: TABLE_NAME,
-            Key: {
-                email: email,
-                grocery_id : grocery_id,
-            },
-            UpdateExpression: `SET name = :newName, category = :newCategory, quantity = :newQuantity, status = :newStatus, expiry_date = :newExpiryDate`,
-            ConditionExpression: `grocery_id = :conditionValue`,
-            ExpressionAttributeValues: {
-                ":newName" : name,
-                ":newCategory" : category,
-                ":newQuantity" : quantity,
-                ":newStatus" : status,
-                ":newExpiryDate" : date,
-                ":conditionValue" : grocery_id,
-            },
-            ReturnValues: "ALL_NEW",
-        }
-
-        const data = await updateItemAsync(new UpdateItemCommand(params));
-        console.log("Item updated successfully:", data);
-        return{
-            statusCode: 200,
-            body: JSON.stringify({message: "Item updated succesfully"}),
-        }
+    if (!req.name || !req.category || !req.expiry_date || !req.quantity || !req.status || !req.email || !req.grocery_id) {
+      return {
+        statusCode: 400,
+        body: JSON.stringify({ error: "Not all the available data is present" }),
+      };
     }
-    catch (err) {
-        console.error("Error:", err);
-        return {
-            statusCode: 500,
-            body: JSON.stringify({ message: "An error occurred" }),
-        };
-    }
-}
+
+    const name = req.name;
+    const category = req.category;
+    const quantity = req.quantity;
+    const status = req.status;
+    const date = req.expiry_date;
+    const email = req.email;
+    const grocery_id = req.grocery_id;
+
+    const params = {
+      TableName: TABLE_NAME,
+      Item: {
+        email: { S: email },
+        grocery_id: { S: grocery_id },
+        name: { S: name },
+        category: { S: category },
+        quantity: { S: quantity },
+        status: { S: status },
+        expiry_date: { N: date.toString() },
+      },
+    };
+
+    console.log("PutItem params:", params);
+
+    await putItemAsync(new PutItemCommand(params));
+
+    return {
+      statusCode: 200,
+      body: JSON.stringify({ message: "Item put successfully" }),
+    };
+  } catch (err) {
+    console.error("Error:", err);
+
+    // Return a more informative error response
+    return {
+      statusCode: err.statusCode || 500,
+      body: JSON.stringify({ message: err.message || "An error occurred" }),
+    };
+  }
+};

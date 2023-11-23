@@ -330,7 +330,7 @@ Resources:
     Type: AWS::ApiGatewayV2::Route
     Properties:
       ApiId: !Ref ProjectApi
-      RouteKey: "DELETE /grocery/{email}"
+      RouteKey: "DELETE /grocery/{grocery_id}"
       AuthorizationType: NONE
       Target: !Sub "integrations/${GroceryDeleteIntegration}"
 
