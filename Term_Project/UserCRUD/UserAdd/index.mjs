@@ -31,6 +31,7 @@ export const handler = async (event) => {
         const getCommand = new GetItemCommand(params);
         const existingUser = await sendAsync(getCommand);
 
+        // remove this condition and update this code if we provide the functionality to edit the user
         if(existingUser.Item)
         {
             return {

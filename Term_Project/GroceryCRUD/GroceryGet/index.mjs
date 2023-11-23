@@ -10,7 +10,7 @@ const TABLE_NAME = "GroceryData";
 export const handler = async (event) => {
   try {
     
-    const email = event.queryStringParameters.email; 
+    const email = event.pathParameters.email; 
 
     if (!email) {
       return {

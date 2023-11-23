@@ -133,23 +133,23 @@ Resources:
       FunctionName: !GetAtt UserAddLambda.Arn
       Principal: apigateway.amazonaws.com
 
-  UserGetLambda:
+  UserGetByEmailLambda:
     Type: AWS::Lambda::Function
     Properties:
-      FunctionName: UserGet
+      FunctionName: UserGetByEmail
       Handler: index.handler
       Role: arn:aws:iam::579043522960:role/LabRole
       Runtime: nodejs20.x
       Timeout: 60
       Code: 
         S3Bucket: code-b00934576
-        S3Key: user-get.zip
+        S3Key: user-get-by-email.zip
 
-  UserGetLambdaInvokePermission:
+  UserGetByEmailLambdaInvokePermission:
     Type: AWS::Lambda::Permission
     Properties:
       Action: lambda:InvokeFunction
-      FunctionName: !GetAtt UserGetLambda.Arn
+      FunctionName: !GetAtt UserGetByEmailLambda.Arn
       Principal: apigateway.amazonaws.com
         
   # UserEditLambda:
@@ -208,7 +208,7 @@ Resources:
       AutoDeploy: true
       StageName: default
 
-  UserGetIntegration:
+  UserGetByEmailIntegration:
     Type: AWS::ApiGatewayV2::Integration
     Properties:
       ApiId: !Ref ProjectApi
@@ -216,12 +216,123 @@ Resources:
       IntegrationType: AWS_PROXY
       IntegrationMethod: POST
       PayloadFormatVersion: "2.0"
-      IntegrationUri: !GetAtt UserGetLambda.Arn
+      IntegrationUri: !GetAtt UserGetByEmailLambda.Arn
 
-  UserGetRoute:
+  UserGetByEmailRoute:
     Type: AWS::ApiGatewayV2::Route
     Properties:
       ApiId: !Ref ProjectApi
-      RouteKey: "GET /user/{email}"
+      RouteKey: "GET /users/{email}"
       AuthorizationType: NONE
-      Target: !Sub "integrations/${UserGetIntegration}"
+      Target: !Sub "integrations/${UserGetByEmailIntegration}"
+
+  UserAddIntegration:
+    Type: AWS::ApiGatewayV2::Integration
+    Properties:
+      ApiId: !Ref ProjectApi
+      Description: Lambda proxy integration
+      IntegrationType: AWS_PROXY
+      IntegrationMethod: POST
+      PayloadFormatVersion: "2.0"
+      IntegrationUri: !GetAtt UserAddLambda.Arn
+
+  UserAddRoute:
+    Type: AWS::ApiGatewayV2::Route
+    Properties:
+      ApiId: !Ref ProjectApi
+      RouteKey: "PUT /users"
+      AuthorizationType: NONE
+      Target: !Sub "integrations/${UserAddIntegration}"
+
+  UserDeleteIntegration:
+    Type: AWS::ApiGatewayV2::Integration
+    Properties:
+      ApiId: !Ref ProjectApi
+      Description: Lambda proxy integration
+      IntegrationType: AWS_PROXY
+      IntegrationMethod: POST
+      PayloadFormatVersion: "2.0"
+      IntegrationUri: !GetAtt UserDeleteLambda.Arn
+
+  UserDeleteRoute:
+    Type: AWS::ApiGatewayV2::Route
+    Properties: 
+      ApiId: !Ref ProjectApi
+      RouteKey: "DELETE /users/{email}"
+      AuthorizationType: NONE
+      Target: !Sub "integrations/${UserDeleteIntegration}"
+
+  GroceryGetIntegration:
+    Type: AWS::ApiGatewayV2::Integration
+    Properties:
+      ApiId: !Ref ProjectApi
+      Description: Lambda proxy integration
+      IntegrationType: AWS_PROXY
+      IntegrationMethod: POST
+      PayloadFormatVersion: "2.0"
+      IntegrationUri: !GetAtt GroceryGetLambda.Arn
+
+  GroceryGetRoute:
+    Type: AWS::ApiGatewayV2::Route
+    Properties:
+      ApiId: !Ref ProjectApi
+      RouteKey: "GET /grocery/{email}"
+      AuthorizationType: NONE
+      Target: !Sub "integrations/${GroceryGetIntegration}"
+
+  GroceryAddIntegration:
+    Type: AWS::ApiGatewayV2::Integration
+    Properties:
+      ApiId: !Ref ProjectApi
+      Description: Lambda proxy integration
+      IntegrationType: AWS_PROXY
+      IntegrationMethod: POST
+      PayloadFormatVersion: "2.0"
+      IntegrationUri: !GetAtt GroceryAddLambda.Arn
+
+  GroceryAddRoute:
+    Type: AWS::ApiGatewayV2::Route
+    Properties:
+      ApiId: !Ref ProjectApi
+      RouteKey: "POST /grocery"
+      AuthorizationType: NONE
+      Target: !Sub "integrations/${GroceryAddIntegration}"
+
+  GroceryEditIntegration:
+    Type: AWS::ApiGatewayV2::Integration
+    Properties:
+      ApiId: !Ref ProjectApi
+      Description: Lambda proxy integration
+      IntegrationType: AWS_PROXY
+      IntegrationMethod: POST
+      PayloadFormatVersion: "2.0"
+      IntegrationUri: !GetAtt GroceryEditLambda.Arn
+
+  GroceryEditRoute:
+    Type: AWS::ApiGatewayV2::Route
+    Properties:
+      ApiId: !Ref ProjectApi
+      RouteKey: "PUT /grocery"
+      AuthorizationType: NONE
+      Target: !Sub "integrations/${GroceryEditIntegration}"
+
+  GroceryDeleteIntegration:
+    Type: AWS::ApiGatewayV2::Integration
+    Properties:
+      ApiId: !Ref ProjectApi
+      Description: Lambda proxy integration
+      IntegrationType: AWS_PROXY
+      IntegrationMethod: POST
+      PayloadFormatVersion: "2.0"
+      IntegrationUri: !GetAtt GroceryDeleteLambda.Arn
+
+  GroceryDeleteRoute:
+    Type: AWS::ApiGatewayV2::Route
+    Properties:
+      ApiId: !Ref ProjectApi
+      RouteKey: "DELETE /grocery/{email}"
+      AuthorizationType: NONE
+      Target: !Sub "integrations/${GroceryDeleteIntegration}"
+
+
+  

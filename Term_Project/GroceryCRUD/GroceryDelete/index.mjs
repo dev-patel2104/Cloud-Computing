@@ -8,7 +8,7 @@ const TABLE_NAME = "GroceryData";
 
 export const handler = async (event) => {
     try {
-        const grocery_id = event.queryStringParameters.grocery_id; 
+        const grocery_id = event.pathParameters.grocery_id; 
 
         if (!grocery_id) {
             return {
