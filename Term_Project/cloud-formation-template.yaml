@@ -1,6 +1,43 @@
 AWSTemplateFormatVersion: "2010-09-09"
 
+Parameters: 
+  ApiName:
+    Type: String
+    Description: Name of the HTTP API
+
 Resources:
+  GroceryDynamoDBTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: GroceryData
+      AttributeDefinitions:
+        - AttributeName: email
+          AttributeType: S
+        - AttributeName: grocery_id
+          AttributeType: S
+      KeySchema:
+        - AttributeName: email
+          KeyType: HASH
+        - AttributeName: grocery_id
+          KeyType: RANGE
+      ProvisionedThroughput:
+        ReadCapacityUnits: 5
+        WriteCapacityUnits: 5
+
+  UserDynamoDBTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: UserData
+      AttributeDefinitions:
+        - AttributeName: email
+          AttributeType: S
+      KeySchema:
+        - AttributeName: email
+          KeyType: HASH
+      ProvisionedThroughput:
+        ReadCapacityUnits: 5
+        WriteCapacityUnits: 5  
+
   GroceryAddLambda:
     Type: AWS::Lambda::Function
     Properties:
@@ -24,7 +61,7 @@ Resources:
       Code: 
         S3Bucket: code-b00934576
         S3Key: grocery-get.zip
-grto
+        
   GroceryEditLambda:
     Type: AWS::Lambda::Function
     Properties: 
@@ -48,3 +85,92 @@ grto
       code:
         S3Bucket: code-b00934576
         S3Key: grocery-delete.zip
+
+
+  UserAddLambda:
+    Type: AWS::Lambda::Function
+    Properties:
+      FunctionName: UserAdd
+      Handler: index.handler 
+      Role: arn:aws:iam::579043522960:role/LabRole 
+      Runtime: nodejs20.x  
+      Timeout: 60  
+      Code:
+        S3Bucket: code-b00934576
+        S3Key: user-add.zip  
+
+  UserGetLambda:
+    Type: AWS::Lambda::Function
+    Properties:
+      FunctionName: UserGet
+      Handler: index.handler
+      Role: arn:aws:iam::579043522960:role/LabRole
+      Runtime: nodejs20.x
+      Timeout: 60
+      Code: 
+        S3Bucket: code-b00934576
+        S3Key: user-get.zip
+        
+  # UserEditLambda:
+  #   Type: AWS::Lambda::Function
+  #   Properties: 
+  #     FunctionName: UserEdit
+  #     Handler: index.handler
+  #     Role: arn:aws:iam::579043522960:role/LabRole
+  #     Runtime: nodejs20.x
+  #     Timeout: 60
+  #     Code: 
+  #       S3Bucket: code-b00934576
+  #       S3Key: user-edit.zip
+
+  UserDeleteLambda:
+    Type: AWS::Lambda::Function
+    Properties:
+      FunctionName: UserDelete
+      Handler: index.handler
+      Role: arn:aws:iam::579043522960:role/LabRole
+      Runtime: nodejs20.x
+      Timeout: 60
+      code:
+        S3Bucket: code-b00934576
+        S3Key: user-delete.zip
+
+  ProjectApi:
+    Type: AWS::ApiGatewayV2::Api
+    Properties: 
+      Name: !Ref ApiName
+      ProtocolType: HTTP
+      CorsConfiguration:
+        AllowMethods:
+          - GET
+          - POST
+          - PUT
+          - DELETE
+        AllowHeaders:
+          - '*'
+        AllowOrigins:
+          - '*'
+  
+  DefaultStage:
+    Type: AWS::ApiGatewayV2::Stage
+    Properties:
+      ApiId: !Ref ProjectApi
+      StageName: default
+
+  UserGetIntegration:
+    Type: AWS::ApiGatewayV2::Integration
+    Properties:
+      ApiId: !Ref ProjectApi
+      Description: Lambda proxy integration
+      IntegrationType: AWS_PROXY
+      IntegrationMethod: POST
+      PayloadFormatVersion: "2.0"
+      IntegrationUri: !GetAtt UserGetLambda.Arn
+
+  UserGetRoute:
+    Type: AWS::ApiGatewayV2::Route
+    Properties:
+      ApiId: !Ref MyApi
+      RouteKey: "GET /myresource"
+      AuthorizationType: NONE
+      Target: !Sub "integrations/${UserGetIntegration}"
