@@ -8,8 +8,8 @@ const TABLE_NAME = "UserData";
 
 export const handler = async (event) => {
   try {
-
-    const email = event.queryStringParameters.email; // use either query parameter if get call or change to request body for post call
+    
+    const email = event.pathParameters.email; // use either query parameter if get call or change to request body for post call
 
     if (!email) {
       return {
@@ -19,11 +19,13 @@ export const handler = async (event) => {
         }),
       };
     }
-
+    
+    console.log(email);
+    
     const params = {
       TableName: TABLE_NAME,
       Key: {
-        email: email,
+        email: { S : email},
       },
     };
 

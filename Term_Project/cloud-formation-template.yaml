@@ -48,7 +48,14 @@ Resources:
       Timeout: 60  
       Code:
         S3Bucket: code-b00934576
-        S3Key: grocery-add.zip  
+        S3Key: grocery-add.zip 
+
+  GroceryAddLambdaInvokePermission:
+    Type: AWS::Lambda::Permission
+    Properties:
+      Action: lambda:InvokeFunction
+      FunctionName: !GetAtt GroceryAddLambda.Arn
+      Principal: apigateway.amazonaws.com 
 
   GroceryGetLambda:
     Type: AWS::Lambda::Function
@@ -61,6 +68,13 @@ Resources:
       Code: 
         S3Bucket: code-b00934576
         S3Key: grocery-get.zip
+  
+  GroceryGetLambdaInvokePermission:
+    Type: AWS::Lambda::Permission
+    Properties:
+      Action: lambda:InvokeFunction
+      FunctionName: !GetAtt GroceryGetLambda.Arn
+      Principal: apigateway.amazonaws.com 
         
   GroceryEditLambda:
     Type: AWS::Lambda::Function
@@ -74,6 +88,13 @@ Resources:
         S3Bucket: code-b00934576
         S3Key: grocery-edit.zip
 
+  GroceryEditLambdaInvokePermission:
+    Type: AWS::Lambda::Permission
+    Properties:
+      Action: lambda:InvokeFunction
+      FunctionName: !GetAtt GroceryEditLambda.Arn
+      Principal: apigateway.amazonaws.com 
+
   GroceryDeleteLambda:
     Type: AWS::Lambda::Function
     Properties:
@@ -82,10 +103,16 @@ Resources:
       Role: arn:aws:iam::579043522960:role/LabRole
       Runtime: nodejs20.x
       Timeout: 60
-      code:
+      Code:
         S3Bucket: code-b00934576
         S3Key: grocery-delete.zip
 
+  GroceryDeleteLambdaInvokePermission:
+    Type: AWS::Lambda::Permission
+    Properties:
+      Action: lambda:InvokeFunction
+      FunctionName: !GetAtt GroceryDeleteLambda.Arn
+      Principal: apigateway.amazonaws.com 
 
   UserAddLambda:
     Type: AWS::Lambda::Function
@@ -98,6 +125,13 @@ Resources:
       Code:
         S3Bucket: code-b00934576
         S3Key: user-add.zip  
+  
+  UserAddLambdaInvokePermission:
+    Type: AWS::Lambda::Permission
+    Properties:
+      Action: lambda:InvokeFunction
+      FunctionName: !GetAtt UserAddLambda.Arn
+      Principal: apigateway.amazonaws.com
 
   UserGetLambda:
     Type: AWS::Lambda::Function
@@ -110,6 +144,13 @@ Resources:
       Code: 
         S3Bucket: code-b00934576
         S3Key: user-get.zip
+
+  UserGetLambdaInvokePermission:
+    Type: AWS::Lambda::Permission
+    Properties:
+      Action: lambda:InvokeFunction
+      FunctionName: !GetAtt UserGetLambda.Arn
+      Principal: apigateway.amazonaws.com
         
   # UserEditLambda:
   #   Type: AWS::Lambda::Function
@@ -131,9 +172,16 @@ Resources:
       Role: arn:aws:iam::579043522960:role/LabRole
       Runtime: nodejs20.x
       Timeout: 60
-      code:
+      Code:
         S3Bucket: code-b00934576
         S3Key: user-delete.zip
+  
+  UserDeleteLambdaInvokePermission:
+    Type: AWS::Lambda::Permission
+    Properties:
+      Action: lambda:InvokeFunction
+      FunctionName: !GetAtt UserDeleteLambda.Arn
+      Principal: apigateway.amazonaws.com
 
   ProjectApi:
     Type: AWS::ApiGatewayV2::Api
@@ -150,11 +198,14 @@ Resources:
           - '*'
         AllowOrigins:
           - '*'
-  
+        ExposeHeaders:
+          - '*'
+
   DefaultStage:
     Type: AWS::ApiGatewayV2::Stage
     Properties:
       ApiId: !Ref ProjectApi
+      AutoDeploy: true
       StageName: default
 
   UserGetIntegration:
@@ -170,7 +221,7 @@ Resources:
   UserGetRoute:
     Type: AWS::ApiGatewayV2::Route
     Properties:
-      ApiId: !Ref MyApi
-      RouteKey: "GET /myresource"
+      ApiId: !Ref ProjectApi
+      RouteKey: "GET /user/{email}"
       AuthorizationType: NONE
       Target: !Sub "integrations/${UserGetIntegration}"
