@@ -7,7 +7,7 @@ const TABLE_NAME = "UserData";
 
 export const handler = async (event) => {
     try {
-      const email = event.queryStringParameters.email;
+      const email = event.pathParameters.email;
   
       if (!email) {
         return {
@@ -19,11 +19,7 @@ export const handler = async (event) => {
       const params = {
         TableName: TABLE_NAME,
         Key: {
-          email: email,
-        },
-        ConditionExpression: `email = :conditionValue`,
-        ExpressionAttributeValues: {
-          ":conditionValue": email,
+          email: { S : email},
         },
       };
       

@@ -24,7 +24,7 @@ export const handler = async (event) => {
         params = {
             TableName: TABLE_NAME,
             Key: {
-                email: email,
+                email: {S : email},
             },
         };
 
