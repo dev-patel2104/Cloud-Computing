@@ -9,36 +9,52 @@ const TABLE_NAME = "GroceryData";
 
 export const handler = async (event) => {
   try {
-    
+
     const req = JSON.parse(event.body);
-    
-    if(!req.name || !req.category || !req.expiry_date || !req.quantity || !req.status || !req.email)
-    {
+
+    if (!req.name || !req.category || !req.quantity || !req.status || !req.email) {
       return {
         statusCod: 400,
-        body: JSON.stringify({error: "Not all the available data is present"})
+        body: JSON.stringify({ error: "Not all the available data is present" })
       };
     }
     const name = req.name;
     const category = req.category;
     const quantity = req.quantity;
     const status = req.status;
-    const date = req.expiry_date;    
+    const date = req.expiry_date || null;
     const email = req.email;
-    
+
+    let params;
+
     const uuidValue = uuid();
-    const params = {
-      TableName: TABLE_NAME,
-      Item: {
-        email: {S: email},
-        name: { S: name },
-        grocery_id: { S: uuidValue },
-        category: {S: category },
-        quantity: {S: quantity},
-        status: {S: status},
-        expiry_date: {N: date.toString()}
-      },
-    };
+    if (date === null) {
+      params = {
+        TableName: TABLE_NAME,
+        Item: {
+          email: { S: email },
+          name: { S: name },
+          grocery_id: { S: uuidValue },
+          category: { S: category },
+          quantity: { S: quantity },
+          status: { S: status },
+        },
+      };
+    }
+    else {
+      params = {
+        TableName: TABLE_NAME,
+        Item: {
+          email: { S: email },
+          name: { S: name },
+          grocery_id: { S: uuidValue },
+          category: { S: category },
+          quantity: { S: quantity },
+          status: { S: status },
+          expiry_date: { N: date.toString() }
+        },
+      };
+    }
 
     const putCommand = new PutItemCommand(params);
 
