@@ -1,20 +1,26 @@
 import React from 'react';
 import GroceryCard from '../components/GroceryCard';
-
-const groceryData = [
-    { id: 1, name: 'Item 1', category: 'Category 1', status: 'To Buy', quantity: "10" },
-    { id: 2, name: 'Item 2', category: 'Category 2', status: 'Bought', quantity: "5", expiry_date: '2023-11-30' },
-    { id: 3, name: 'Item 1', category: 'Category 1', status: 'To Buy', quantity: "10" },
-    { id: 4, name: 'Item 2', category: 'Category 2', status: 'Bought', quantity: "5", expiry_date: '2023-11-30' },
-    { id: 5, name: 'Item 1', category: 'Category 1', status: 'To Buy', quantity: "10" },
-    { id: 6, name: 'Item 2', category: 'Category 2', status: 'Bought', quantity: "5", expiry_date: '2023-11-30' },
-    // Add more grocery items as needed
-];
+import { getGroceryByEmail } from '../services/GroceryServices';
+import { useEffect, useState } from 'react';
 
 function GroceryList() {
     // Separate items into two arrays based on their status
-    const toBuyItems = groceryData.filter((item) => item.status === 'To Buy');
-    const boughtItems = groceryData.filter((item) => item.status === 'Bought');
+    const [groceryData, setGroceryData] = useState([]);
+    const [toBuyItems, setToBuyItems] = useState([]);
+    const [boughtItems, setBoughtItems] = useState([]);
+
+    const getGroceryItems = async () => {
+        const email = "dev2104patel@gmail.com" // later will get this email from the local storage
+        const allItems = await getGroceryByEmail(email);
+        setGroceryData(allItems);
+        setToBuyItems(allItems.filter((item) => item.status === 'To Buy'));
+        setBoughtItems(allItems.filter((item) => item.status === 'Bought'));
+    }
+
+    useEffect(() => {
+        getGroceryItems();
+        //console.log(toBuyItems);
+    }, []);
 
     return (
         <div className="mx-auto p-4 w-screen">
@@ -29,7 +35,7 @@ function GroceryList() {
                 </div>
                 <div className="flex flex-col gap-4 items-center">
                     {toBuyItems.map((grocery) => (
-                        <GroceryCard key={grocery.id} {...grocery} />
+                        <GroceryCard key={grocery.grocery_id} {...grocery} />
                     ))}
                 </div>
             </div>
@@ -41,7 +47,7 @@ function GroceryList() {
                 </div>
                 <div className="flex flex-col gap-4 items-center">
                     {boughtItems.map((grocery) => (
-                        <GroceryCard key={grocery.id} {...grocery} />
+                        <GroceryCard key={grocery.grocery_id} {...grocery} />
                     ))}
                 </div>
             </div>

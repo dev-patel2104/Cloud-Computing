@@ -1,11 +1,9 @@
 import React from 'react';
-import { NavLink } from 'react-router-dom';
-// styled-components file
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEdit, faTrashAlt } from '@fortawesome/free-regular-svg-icons';
 
 function GroceryCard(props) {
-    const { id, name, category, status, quantity, expiry_date } = props;
+    const { grocery_id, name, category, status, quantity, expiry_date } = props;
 
     return (
         <>
