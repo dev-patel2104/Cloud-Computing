@@ -62,7 +62,7 @@ export const handler = async (event) => {
 
     return {
       statusCode: 201, // 201 Created
-      body: JSON.stringify({ message: "Grocery added successfully" }),
+      body: JSON.stringify({ grocery_id: uuidValue }),
     };
   } catch (error) {
     console.error("Error:", error);
