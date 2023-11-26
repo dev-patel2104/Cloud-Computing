@@ -1,6 +1,27 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 
 const GroceryAlertBox = ({ isAlertOpen, handleAlertClose, newItem, handleInputChange, handleFormSubmit }) => {
+
+    const isExpiryDateValid = () => {
+        if (newItem.status === 'Bought' && newItem.expiry_date) {
+            const currentDate = new Date();
+            const selectedDate = new Date(newItem.expiry_date);
+            return selectedDate > currentDate;
+        }
+        return true;
+    };
+
+
+
+    // useEffect(() => {
+
+    //     const date = new Date(parseInt(newItem.expiry_date, 10));
+    //     const month = (date.getMonth() + 1).toString().padStart(2, '0');
+    //     const day = date.getDate().toString().padStart(2, '0');
+    //     const year = date.getFullYear();
+    //     newItem.expiry_date = `${month}/${day}/${year}`;
+    //     //return `${month}/${day}/${year}`;
+    // }, [])
 
     return (
         <>
@@ -75,6 +96,7 @@ const GroceryAlertBox = ({ isAlertOpen, handleAlertClose, newItem, handleInputCh
                             <button
                                 onClick={handleFormSubmit}
                                 className="bg-blue-600 text-white rounded-md p-2"
+                                disabled={!isExpiryDateValid()}
                             >
                                 Submit
                             </button>

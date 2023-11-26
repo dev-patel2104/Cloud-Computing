@@ -123,7 +123,7 @@ function GroceryCard(props) {
                 <div className="flex w-full ">
                     <div className="flex flex-col w-full justify-between">
                         <p className="text-customBackground font-semibold text-md">Quantiy: {quantity}</p>
-                        {expiry_date && <p className="text-customBackgroundt font-semibold text-md">Expiry Date: {formatDate(expiry_date)}</p>}
+                        {expiry_date && <p className="text-customBackground font-semibold text-md">Expiry Date: {formatDate(expiry_date)}</p>}
                     </div>
                     <div className='flex gap-4 items-center'>
                         <FontAwesomeIcon
