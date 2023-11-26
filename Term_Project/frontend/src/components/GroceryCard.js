@@ -23,6 +23,13 @@ function GroceryCard(props) {
         email: ''
     });
 
+    // Utility function to convert timestamp to "Month day, year" format
+    const formatDate = (timestamp) => {
+        if (!timestamp) return '';
+        const dateObj = new Date(parseInt(timestamp, 10));
+        return dateObj.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+    };
+
     // Function to open edit dialog and set the item being edited
     const handleEditOpen = () => {
         console.log(editedItem);
@@ -38,9 +45,13 @@ function GroceryCard(props) {
     const handleFormSubmit = async () => {
         // Add your logic to submit the form data
         console.log(editedItem);
-
+        const temp = editedItem;
+        if (temp.expiry_date) {
+            const [month, day, year] = temp.expiry_date.split('/');
+            temp.expiry_date = new Date(`${year}-${month}-${day}`).getTime();
+        }
     
-        await editGroceryItem(editedItem);
+        await editGroceryItem(temp);
         await getGroceryItems();
 ;
         //await addGroceryItem(newItem);
@@ -112,7 +123,7 @@ function GroceryCard(props) {
                 <div className="flex w-full ">
                     <div className="flex flex-col w-full justify-between">
                         <p className="text-customBackground font-semibold text-md">Quantiy: {quantity}</p>
-                        {expiry_date && <p className="text-customBackgroundt font-semibold text-md">Expiry Date: {expiry_date}</p>}
+                        {expiry_date && <p className="text-customBackgroundt font-semibold text-md">Expiry Date: {formatDate(expiry_date)}</p>}
                     </div>
                     <div className='flex gap-4 items-center'>
                         <FontAwesomeIcon

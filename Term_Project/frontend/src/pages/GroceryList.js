@@ -60,9 +60,18 @@ function GroceryList() {
         // Add your logic to submit the form data
         console.log(newItem);
         const temp = newItem;
+
+        if (temp.expiry_date) {
+            const [month, day, year] = temp.expiry_date.split('/');
+            temp.expiry_date = new Date(`${year}-${month}-${day}`).getTime();
+        }
+
         const response = await addGroceryItem(newItem);
 
         temp.grocery_id = response.grocery_id;
+
+        
+
         console.log(temp);
         setNewItem((prevItem) => ({ ...prevItem, grocery_id: response.grocery_id }));
         const updatedToBuyItems = toBuyItems.slice();
@@ -80,12 +89,12 @@ function GroceryList() {
         handleAlertClose();
     }
 
-    
+
     useEffect(() => {
         const email = localStorage.getItem('email')
         setNewItem((prevItem) => ({ ...prevItem, email: email }));
         getGroceryItems();
-        
+
         console.log("To buy Items", toBuyItems);
         console.log("Bought Items", boughtItems);
         console.log("allItems", groceryData);
@@ -93,7 +102,7 @@ function GroceryList() {
     }, []);
 
     return (
-        <div className="mx-auto p-4 w-screen bg-customBackground" style={{ height: '92vh' }}>
+        <div className="mx-auto p-4 w-screen bg-customBackground h-full" >
             <div className='flex justify-center'>
                 <h1 className="text-3xl font-bold mb-4">Grocery Items</h1>
             </div>
@@ -118,7 +127,7 @@ function GroceryList() {
                                 )
                                 : (
                                     toBuyItems.map((grocery) => (
-                                        <GroceryCard key={grocery.grocery_id} {...grocery} getGroceryItems={getGroceryItems} setIsDataLoaded = {setIsDataLoaded}/>
+                                        <GroceryCard key={grocery.grocery_id} {...grocery} getGroceryItems={getGroceryItems} setIsDataLoaded={setIsDataLoaded} />
                                     ))
                                 ))
                             :
@@ -146,7 +155,7 @@ function GroceryList() {
                                     </div>
                                 )
                                 : (boughtItems.map((grocery) => (
-                                    <GroceryCard key={grocery.grocery_id} {...grocery} getGroceryItems={getGroceryItems} setIsDataLoaded = {setIsDataLoaded}/>
+                                    <GroceryCard key={grocery.grocery_id} {...grocery} getGroceryItems={getGroceryItems} setIsDataLoaded={setIsDataLoaded} />
                                 )))
                             )
                             : (<><GroceryCardSkeleton />

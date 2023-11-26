@@ -1,6 +1,7 @@
 import React from 'react';
 
 const GroceryAlertBox = ({ isAlertOpen, handleAlertClose, newItem, handleInputChange, handleFormSubmit }) => {
+
     return (
         <>
             {isAlertOpen && (
@@ -66,6 +67,7 @@ const GroceryAlertBox = ({ isAlertOpen, handleAlertClose, newItem, handleInputCh
                                         value={newItem.expiry_date}
                                         onChange={handleInputChange}
                                         className="border border-gray-400 rounded-md p-2"
+                                        placeholder="MM/dd/yyyy"
                                     />
                                 </>
                             )}
