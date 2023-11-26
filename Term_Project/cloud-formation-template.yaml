@@ -151,18 +151,44 @@ Resources:
       Action: lambda:InvokeFunction
       FunctionName: !GetAtt UserGetByEmailLambda.Arn
       Principal: apigateway.amazonaws.com
-        
-  # UserEditLambda:
-  #   Type: AWS::Lambda::Function
-  #   Properties: 
-  #     FunctionName: UserEdit
-  #     Handler: index.handler
-  #     Role: arn:aws:iam::579043522960:role/LabRole
-  #     Runtime: nodejs20.x
-  #     Timeout: 60
-  #     Code: 
-  #       S3Bucket: code-b00934576
-  #       S3Key: user-edit.zip
+
+  ExpiryReminderLambda:
+    Type: AWS::Lambda::Function
+    Properties:
+      FunctionName: ExpiryReminder
+      Handler: index.handler
+      Role: arn:aws:iam::579043522960:role/LabRole
+      Runtime: nodejs20.x
+      Timeout: 60
+      Code: 
+        S3Bucket: code-b00934576
+        S3Key: expiry-reminder.zip
+
+  ExpiryReminderLambdaInvokePermission:
+    Type: AWS::Lambda::Permission
+    Properties:
+      Action: lambda:InvokeFunction
+      FunctionName: !GetAtt ExpiryReminderLambda.Arn
+      Principal: apigateway.amazonaws.com
+  
+  SubscribeLambda:
+    Type: AWS::Lambda::Function
+    Properties:
+      FunctionName: Subscribe
+      Handler: index.handler
+      Role: arn:aws:iam::579043522960:role/LabRole
+      Runtime: nodejs20.x
+      Timeout: 60
+      Code: 
+        S3Bucket: code-b00934576
+        S3Key: subscribe.zip
+
+  SubscribeLambdaInvokePermission:
+    Type: AWS::Lambda::Permission
+    Properties:
+      Action: lambda:InvokeFunction
+      FunctionName: !GetAtt SubscribeLambda.Arn
+      Principal: apigateway.amazonaws.com
 
   UserDeleteLambda:
     Type: AWS::Lambda::Function
@@ -333,6 +359,42 @@ Resources:
       RouteKey: "DELETE /grocery/{grocery_id}"
       AuthorizationType: NONE
       Target: !Sub "integrations/${GroceryDeleteIntegration}"
+
+  ExpiryReminderIntegration:
+    Type: AWS::ApiGatewayV2::Integration
+    Properties:
+      ApiId: !Ref ProjectApi
+      Description: Lambda proxy integration
+      IntegrationType: AWS_PROXY
+      IntegrationMethod: POST
+      PayloadFormatVersion: "2.0"
+      IntegrationUri: !GetAtt ExpiryReminderLambda.Arn
+
+  ExpiryReminderRoute:
+    Type: AWS::ApiGatewayV2::Route
+    Properties:
+      ApiId: !Ref ProjectApi
+      RouteKey: "GET /expiry-reminder"
+      AuthorizationType: NONE
+      Target: !Sub "integrations/${ExpiryReminderIntegration}"
+
+  SubscribeIntegration:
+    Type: AWS::ApiGatewayV2::Integration
+    Properties:
+      ApiId: !Ref ProjectApi
+      Description: Lambda proxy integration
+      IntegrationType: AWS_PROXY
+      IntegrationMethod: POST
+      PayloadFormatVersion: "2.0"
+      IntegrationUri: !GetAtt SubscribeLambda.Arn
+
+  SubscribeRoute:
+    Type: AWS::ApiGatewayV2::Route
+    Properties:
+      ApiId: !Ref ProjectApi
+      RouteKey: "POST /subscribe"
+      AuthorizationType: NONE
+      Target: !Sub "integrations/${SubscribeIntegration}"
 
 
   
