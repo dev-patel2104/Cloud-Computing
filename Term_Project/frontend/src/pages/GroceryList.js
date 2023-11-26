@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import GroceryCard from '../components/GroceryCard';
+import GroceryCardSkeleton from '../components/GroceryCardSkeleton';
 import { getGroceryByEmail, addGroceryItem } from '../services/GroceryServices';
 import GroceryAlertBox from '../components/GroceryAlertBox';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -10,6 +11,8 @@ function GroceryList() {
     const [toBuyItems, setToBuyItems] = useState([]);
     const [boughtItems, setBoughtItems] = useState([]);
     const [isAlertOpen, setIsAlertOpen] = useState(false);
+    const [isDataLoaded, setIsDataLoaded] = useState("false");
+
     const [newItem, setNewItem] = useState({
         name: '',
         category: '',
@@ -20,11 +23,14 @@ function GroceryList() {
     });
 
     const getGroceryItems = async () => {
-        const email = "dev2104patel@gmail.com"; // get this value from the local storage
+        const email = localStorage.getItem('email')
         const allItems = await getGroceryByEmail(email);
         setGroceryData(allItems);
-        setToBuyItems(allItems.filter((item) => item.status === 'To Buy'));
-        setBoughtItems(allItems.filter((item) => item.status === 'Bought'));
+        if (allItems) {
+            setToBuyItems(allItems.filter((item) => item.status === 'To Buy'));
+            setBoughtItems(allItems.filter((item) => item.status === 'Bought'));
+        }
+        setIsDataLoaded("true");
     }
 
     const handleAlertOpen = (status) => {
@@ -53,32 +59,41 @@ function GroceryList() {
     const handleFormSubmit = async () => {
         // Add your logic to submit the form data
         console.log(newItem);
-        await addGroceryItem(newItem);
+        const temp = newItem;
+        const response = await addGroceryItem(newItem);
 
+        temp.grocery_id = response.grocery_id;
+        console.log(temp);
+        setNewItem((prevItem) => ({ ...prevItem, grocery_id: response.grocery_id }));
         const updatedToBuyItems = toBuyItems.slice();
         const updatedBoughtItems = boughtItems.slice();
 
         if (newItem.status === 'To Buy') {
-            updatedToBuyItems.push(newItem);
+            updatedToBuyItems.push(temp);
         } else if (newItem.status === 'Bought') {
-            updatedBoughtItems.push(newItem);
+            updatedBoughtItems.push(temp);
         }
 
         setToBuyItems(updatedToBuyItems);
         setBoughtItems(updatedBoughtItems);
-
         // Close the alert after submitting
         handleAlertClose();
     }
 
+    
     useEffect(() => {
-        //const storedEmail = localStorage.getItem('user_email')
-        setNewItem((prevItem) => ({ ...prevItem, email: 'dev2104patel@gmail.com' }));
+        const email = localStorage.getItem('email')
+        setNewItem((prevItem) => ({ ...prevItem, email: email }));
         getGroceryItems();
+        
+        console.log("To buy Items", toBuyItems);
+        console.log("Bought Items", boughtItems);
+        console.log("allItems", groceryData);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     return (
-        <div className="mx-auto p-4 w-screen">
+        <div className="mx-auto p-4 w-screen bg-customBackground" style={{ height: '92vh' }}>
             <div className='flex justify-center'>
                 <h1 className="text-3xl font-bold mb-4">Grocery Items</h1>
             </div>
@@ -86,15 +101,30 @@ function GroceryList() {
             {/* To Buy Section */}
             <div className='flex flex-col'>
                 <div className='flex flex-row justify-center items-center gap-5 my-4'>
-                    <h2 className="text-2xl font-bold">To Buy</h2>
+                    <h2 className="text-2xl text-text font-bold">To Buy</h2>
                     <button onClick={() => handleAlertOpen('To Buy')} className="shadow-md shadow-gray-400 rounded-md py-1 px-2 font-bold">
-                    <FontAwesomeIcon icon={faPlus} className="text-black transform hover:scale-150 transition-transform" />
+                        <FontAwesomeIcon icon={faPlus} className="text-text transform hover:scale-150 transition-transform" />
                     </button>
                 </div>
                 <div className="flex flex-col gap-4 items-center">
-                    {toBuyItems.map((grocery) => (
-                        <GroceryCard key={grocery.grocery_id} {...grocery} getGroceryItems={getGroceryItems} />
-                    ))}
+                    {
+                        isDataLoaded === "true"
+                            ?
+                            (toBuyItems && toBuyItems.length === 0
+                                ? (
+                                    <div className="bg-gray-200 p-4 rounded-md text-center">
+                                        No items added yet.
+                                    </div>
+                                )
+                                : (
+                                    toBuyItems.map((grocery) => (
+                                        <GroceryCard key={grocery.grocery_id} {...grocery} getGroceryItems={getGroceryItems} setIsDataLoaded = {setIsDataLoaded}/>
+                                    ))
+                                ))
+                            :
+                            (<><GroceryCardSkeleton />
+                                <GroceryCardSkeleton /></>)
+                    }
                 </div>
             </div>
 
@@ -103,13 +133,26 @@ function GroceryList() {
                 <div className='flex flex-row justify-center items-center gap-5 mt-12 mb-4'>
                     <h2 className="text-2xl font-bold">Bought</h2>
                     <button onClick={() => handleAlertOpen('Bought')} className=" shadow-md shadow-gray-400 rounded-md py-1 px-2 font-bold">
-                        <FontAwesomeIcon icon={faPlus} className="text-black transform hover:scale-150 transition-transform" />
+                        <FontAwesomeIcon icon={faPlus} className="text-text transform hover:scale-150 transition-transform" />
                     </button>
                 </div>
                 <div className="flex flex-col gap-4 items-center">
-                    {boughtItems.map((grocery) => (
-                        <GroceryCard key={grocery.grocery_id} {...grocery} getGroceryItems={getGroceryItems} />
-                    ))}
+                    {
+                        isDataLoaded === "true"
+                            ? (boughtItems && boughtItems.length === 0
+                                ? (
+                                    <div className="bg-gray-200 p-4 rounded-md text-center">
+                                        No items added yet.
+                                    </div>
+                                )
+                                : (boughtItems.map((grocery) => (
+                                    <GroceryCard key={grocery.grocery_id} {...grocery} getGroceryItems={getGroceryItems} setIsDataLoaded = {setIsDataLoaded}/>
+                                )))
+                            )
+                            : (<><GroceryCardSkeleton />
+                                <GroceryCardSkeleton /></>)
+                    }
+
                 </div>
             </div>
 

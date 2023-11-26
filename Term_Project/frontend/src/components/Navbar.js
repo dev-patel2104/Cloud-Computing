@@ -1,28 +1,29 @@
 import React from 'react';
-import { NavLink } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
-function navbar() {
+function Navbar() {
+    const navigate = useNavigate();
+
+    const handleLogout = () => {
+        // Clear local storage
+        localStorage.clear();
+
+        // Navigate to the login page or any other page you want after logout
+        navigate('/');
+    };
+
     return (
-        <div className='flex-row bg-black items-center' style={{ height: '8vh' }}>
-            <div className=' pl-16 flex justify-start items-center h-full gap-20'>
-                <NavLink to="/" className="text-white rounded-lg text-lg font-bold hover:bg-highlight transition duration-300 py-1 px-4">
-                    About
-                </NavLink>
-                <NavLink to="/education" className="text-white rounded-lg text-lg font-bold hover:bg-highlight transition duration-300 py-1 px-4">
-                    Education and Certification
-                </NavLink>
-                <NavLink to="/work" className="text-white rounded-lg text-lg font-bold hover:bg-highlight transition duration-300 py-1 px-4">
-                    Work
-                </NavLink>
-                <NavLink to="/projects" className="text-white rounded-lg text-lg font-bold hover:bg-highlight transition duration-300 py-1 px-4">
-                    Projects
-                </NavLink>
-                <NavLink to="/contact" className="text-white rounded-lg text-lg font-bold hover:bg-highlight transition duration-300 py-1 px-4">
-                    Get in touch
-                </NavLink>
+        <div className='flex-row bg-navbar items-center' style={{ height: '8vh' }}>
+            <div className='pr-8 flex justify-end items-center h-full gap-20'>
+                <button
+                    onClick={handleLogout}
+                    className="text-text rounded-lg text-lg font-bold hover:bg-customBackground transition duration-300 py-1 px-4"
+                >
+                    Logout
+                </button>
             </div>
         </div>
     );
 }
 
-export default navbar;
+export default Navbar;

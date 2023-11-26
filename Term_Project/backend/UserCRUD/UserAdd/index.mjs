@@ -56,7 +56,7 @@ export const handler = async (event) => {
 
         return {
             statusCode: 201, // 201 Created
-            body: JSON.stringify({ message: "User added successfully" }),
+            body: JSON.stringify({ email: email }),
         };
     } catch (error) {
         console.error("Error:", error);

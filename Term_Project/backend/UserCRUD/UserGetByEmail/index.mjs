@@ -36,15 +36,15 @@ export const handler = async (event) => {
       return {
         statusCode: 404,
         body: JSON.stringify({
-          message: "No such email present in the database",
+          error: "No such email present in the database",
         }),
       };
     } else {
       return {
         statusCode: 200,
         body: JSON.stringify({
-          email: result.Item.email,
-          password: result.Item.password,
+          email: result.Item.email.S,
+          password: result.Item.password.S,
         }),
       };
     }

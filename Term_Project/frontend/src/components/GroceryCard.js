@@ -9,8 +9,10 @@ import 'react-toastify/dist/ReactToastify.css';
 function GroceryCard(props) {
     const { grocery_id, name, category, status, quantity, expiry_date, email } = props;
     const { getGroceryItems } = props;
+    const {setIsDataLoaded} = props;
     // State variables for edit dialog
     const [isEditDialogOpen, setEditDialogOpen] = useState(false);
+
     const [editedItem, setEditedItem] = useState({
         grocery_id: '',
         name: '',
@@ -36,8 +38,11 @@ function GroceryCard(props) {
     const handleFormSubmit = async () => {
         // Add your logic to submit the form data
         console.log(editedItem);
+
+    
         await editGroceryItem(editedItem);
         await getGroceryItems();
+;
         //await addGroceryItem(newItem);
 
         // Close the alert after submitting
@@ -50,19 +55,23 @@ function GroceryCard(props) {
     }
 
     const handleDelete = async () => {
+        console.log("delete is called");
         try {
             console.log(editedItem);
+
+            setIsDataLoaded("false");
             await deleteGroceryItem(editedItem);
             await getGroceryItems();
-            console.log("delete is called");
+            setIsDataLoaded("true");
+           
             // Show a success toast
             toast.success('Item deleted successfully', {
                 position: 'top-right',
                 autoClose: 3000, // Duration in milliseconds
                 hideProgressBar: false,
                 closeOnClick: true,
-                pauseOnHover: true,
-                draggable: true,
+                pauseOnHover: false,
+                draggable: false,
             });
         } catch (error) {
             // Handle error and show an error toast if necessary
@@ -77,6 +86,7 @@ function GroceryCard(props) {
         }
     }
 
+    
     useEffect(() => {
         setEditedItem({
             grocery_id: grocery_id || '',
@@ -87,20 +97,22 @@ function GroceryCard(props) {
             expiry_date: expiry_date || '',
             email: email || '',
         });
+        console.log(props);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
 
     return (
         <>
-            <div className=" w-2/3 flex flex-col justify-between bg-blue-900 shadow-gray-800 shadow-md max-h-100px rounded-lg p-4 gap-4">
+            <div className=" w-2/3 flex flex-col justify-between bg-card shadow-black shadow-md max-h-100px rounded-lg p-4 gap-4">
                 <div className="flex gap-2 w-full justify-between">
-                    <p className="text-white font-bold text-xl">{name}</p>
-                    <p className="text-white font-bold  text-xl">{category}</p>
+                    <p className="text-customBackground font-bold text-xl">{name}</p>
+                    <p className="text-customBackground font-bold  text-xl">{category}</p>
                 </div>
 
                 <div className="flex w-full ">
                     <div className="flex flex-col w-full justify-between">
-                        <p className="text-white font-medium text-md">Quantiy: {quantity}</p>
-                        {expiry_date && <p className="text-white font-medium text-md">Expiry Date: {expiry_date}</p>}
+                        <p className="text-customBackground font-semibold text-md">Quantiy: {quantity}</p>
+                        {expiry_date && <p className="text-customBackgroundt font-semibold text-md">Expiry Date: {expiry_date}</p>}
                     </div>
                     <div className='flex gap-4 items-center'>
                         <FontAwesomeIcon
@@ -135,3 +147,5 @@ function GroceryCard(props) {
 }
 
 export default GroceryCard;
+
+
