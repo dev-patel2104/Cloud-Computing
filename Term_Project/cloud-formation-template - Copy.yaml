@@ -4,3 +4,35 @@ AWSTemplateFormatVersion: '2010-09-09'
 
 
 
+groceryec2:
+    Type: AWS::EC2::Instance
+    DependsOn:
+      - ProjectApi
+    Properties:
+      ImageId: ami-0230bd60aa48260c6
+      InstanceType: t2.micro
+      KeyName: ec2-key
+      SecurityGroups:
+        - !Ref securitygroupec2
+      UserData:
+        Fn::Base64: |
+            #!/bin/bash
+            sudo yum update -y
+            sudo yum install git -y
+            cd home/ec2-user
+            git clone https://github.com/dev-patel2104/GroceryList.git
+            cd GroceryList/Term_Project/frontend
+            curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.5/install.sh | bash
+            . ~/.nvm/nvm.sh
+            nvm install --lts
+            sudo yum install awscli -y
+            sudo yum install jq -y
+            aws configure set aws_access_key_id ASIAYNUNO7GIBSM5FCHC
+            aws configure set aws_secret_access_key YAHiMCQfsR1fIKx738uuldXZCp+Cn6DN/v6BuTnC
+            aws configure set aws_session_token FwoGZXIvYXdzEFQaDEyon+JKsaOyyRcDRiLAAc0nnoDKyiNtzzfxQcBFfnX60Kyuw0n50fjaKggAn0OaG/Nyj7vRlPNYGH8FMxpntdViEji111RPnQ+eWix+pQk2rORYKlyMX8h9kYRwCLxaofBs4B1E8JxdTiJynN81Pw/H1atKUG8vK0Vsvn7ytDe7L0XZYcYgV0rM8BI9VTSpsXzuTKDjwf1rmlP6LiHgs2GuAdYdYqxiGFb9m/r+JWbNWlEjuuD6WUGpz6LW6O/J4Xsiurh3eVt3hXregO5MGyj794+rBjIt3eNTV5ARGC8U/9ACkXW8oXZgxUSpAmKs3SzEt99RnyV2R0b4fiED8CBWdLFX
+            aws configure set region us-east-1
+            gatewayid=$(aws apigatewayv2 get-apis | jq -r '.items[] | select(.name=="ProjectApi") | .ApiId')
+            REACT_APP_API_GATEWAY_URL="REACT_APP_API_GATEWAY_URL=https://${gatewayid}.execute-api.us-east-1.amazonaws.com/default"
+            echo $REACT_APP_API_GATEWAY_URL >> .env
+            npm install
+            npm start
