@@ -3,7 +3,7 @@ import { DynamoDBClient, ScanCommand } from "@aws-sdk/client-dynamodb";
 import { promisify } from 'util';
 
 const sns = new SNS({});
-const topicARN = 'arn:aws:sns:us-east-1:263032025301:DemoTopicSNS'; // change this value of topic arn from env
+const topicARN = 'arn:aws:sns:us-east-1:579043522960:ProjectTopic'; // change this value of topic arn from env
 const dynamoDB = new DynamoDBClient({ region: "us-east-1" });
 
 const scanAsync = promisify(dynamoDB.send).bind(dynamoDB);
@@ -13,6 +13,8 @@ const TABLE_NAME = "GroceryData";
 
 export const handler = async (event) => {
     try {
+        
+        console.log(process.env.sns);
         let response, params, message;
         params = {
             TableName: TABLE_NAME,
@@ -38,7 +40,6 @@ export const handler = async (event) => {
             return transformedItem;
         });
 
-
         let date;
         let currentTime, messageAttributes, cnt = 0;
         const oneDayInMilliseconds = 24 * 60 * 60 * 1000;
@@ -46,13 +47,12 @@ export const handler = async (event) => {
         for (const item of transformedItems) {
 
             currentTime = new Date();
-            date = new Date(item.expiry_date);
+            date = new Date(parseInt(item.expiry_date));
             const timeDifference = date - currentTime;
             console.log("item Date:   " + timeDifference);
             if (timeDifference <= oneDayInMilliseconds && timeDifference >= 0) {
 
                 const email = item.email;
-                console.log(email);
                 if (item.email in groupedItems) {
                     groupedItems[item.email].push(item);
                 } else {
@@ -63,12 +63,15 @@ export const handler = async (event) => {
             }
 
         }
-
+        
+        console.log(groupedItems);
         for (const [email, items] of Object.entries(groupedItems)) {
+            cnt = 0;
             message = `You have the following items which are expiring in a day for ${email}:\n`;
-
+            
             for (const item of items) {
-                message += `${item.name}\n`;
+                cnt++;
+                message += `${cnt}) ${item.name}\n`;
             }
 
             const messageAttributes = { "email": { DataType: "String", StringValue: email } };
@@ -83,7 +86,7 @@ export const handler = async (event) => {
             await publishAsync(params);
         }
 
-        if (cnt == 0) {
+        if (!groupedItems) {
             return {
                 statusCode: 200,
                 body: 'No change has been made to items and no user has been notified.'

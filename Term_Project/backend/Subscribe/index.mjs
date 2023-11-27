@@ -3,13 +3,13 @@ import { SNS } from "@aws-sdk/client-sns";
 import { promisify } from 'util';
 
 const sns = new SNS({})
-const topicArn = 'arn:aws:sns:us-east-1:263032025301:DemoTopicSNS'; // change and fetch the value from actual sns topic
+const topicArn = 'arn:aws:sns:us-east-1:579043522960:ProjectTopic'; // change and fetch the value from actual sns topic
 
 export const handler = async (event) => {
 
     let email;
     const subscribeAsync = promisify(sns.subscribe).bind(sns);
-
+    console.log(process.env.sns);
     try {
         const request = JSON.parse(event.body);
         console.log(request);
