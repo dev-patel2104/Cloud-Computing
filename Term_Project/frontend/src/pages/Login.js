@@ -56,6 +56,7 @@ function Login() {
         try {
 
             const user = await getUserByEmail(email);
+            const passwordHash = crypto.createHash("md5").update(password).digest("hex");
             console.log(user);
             if(user.error)
             { 
@@ -63,7 +64,7 @@ function Login() {
                 setEmail('');
                 setMessage('No such email exist');
             }
-            else if (user && user.password === password) {
+            else if (user && user.password === passwordHash) {
                 // Password is correct, store the email in local storage
                 
                 localStorage.setItem('email', email);
