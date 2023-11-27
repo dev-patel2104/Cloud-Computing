@@ -477,7 +477,7 @@ Resources:
           aws configure set aws_session_token FwoGZXIvYXdzEGMaDPgerxI9fn7cZdHtxiLAAcYOc5+pi4Q38O/ioUYJzw2WEAZDNFALFHNJ0ge658iV+S+Io3tQ60P51/nfm5pfRLmmzBXSM1zcZTeAhQjxHtpuvqbQ+mI0+BAGuXQvg48ns0anuAlGscZoFpCmAw/fOOEpMjAnqCyEoJHlu8hOlesSrM1RP4SIEY34sqnnX5MSwh9kaWRJqMT7xqT6PzMuCSGJxPzEV2tXhOKvcPFYPoGwfcmWsli5HVXSao04nw0ZL+lR7w83ehnbPfTPSyp57SjWmZOrBjItkTWmSsexuIQk3FzdYxUfmffxG1d3z/snN0slGFwLXQuYrvJ2PHN/VExddQbB
           aws configure set region us-east-1
           gatewayid=$(aws apigatewayv2 get-apis | jq -r '.Items[] | select(.Name=="ProjectApi") | .ApiId')
-          REACT_APP_API_GATEWAY_URL="https://${gatewayid}.execute-api.us-east-1.amazonaws.com/default"
+          REACT_APP_API_GATEWAY_URL="REACT_APP_API_GATEWAY_URL=https://${gatewayid}.execute-api.us-east-1.amazonaws.com/default"
           echo $REACT_APP_API_GATEWAY_URL >> .env
           sudo /usr/bin/npm i
           sudo /usr/bin/npm start

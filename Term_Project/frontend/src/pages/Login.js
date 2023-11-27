@@ -4,6 +4,7 @@ import { faEnvelope, faKey } from '@fortawesome/free-solid-svg-icons';
 import homeImage from '../assets/home.svg';
 import { NavLink, useNavigate } from 'react-router-dom';
 import { getUserByEmail } from '../services/UserManagementServices';
+import md5 from "md5";
 
 function Login() {
     const [email, setEmail] = useState('');
@@ -56,7 +57,7 @@ function Login() {
         try {
 
             const user = await getUserByEmail(email);
-            const passwordHash = crypto.createHash("md5").update(password).digest("hex");
+            const passwordHash = md5(password);
             console.log(user);
             if(user.error)
             { 
