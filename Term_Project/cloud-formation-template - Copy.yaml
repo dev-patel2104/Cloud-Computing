@@ -1,16 +1,6 @@
 AWSTemplateFormatVersion: '2010-09-09'
 
-Resources:
-  MySNSTopic:
-    Type: 'AWS::SNS::Topic'
-    Properties:
-      DisplayName: 'testTopic'
-      TopicName: 'testTopic'
 
-  DailyTriggerEventBridgeRule:
-    Type: 'AWS::Events::Rule'
-    Properties:
-      Name: 'daily-timer'
-      Description: 'Trigger Lambda once every day'
-      ScheduleExpression: 'rate(1 day)'
-      State: 'ENABLED'
+
+
+

@@ -1,6 +1,8 @@
+const url = process.env.REACT_APP_API_GATEWAY_URL;
+
 export const getGroceryByEmail = async (email) => {
     try {
-        const response = await fetch(`https://9k7ig9gw8c.execute-api.us-east-1.amazonaws.com/default/grocery/${email}`);
+        const response = await fetch(`${url}/grocery/${email}`);
 
         const data = await response.json();
         return data;
@@ -20,7 +22,7 @@ export const addGroceryItem = async (item) => {
             body: JSON.stringify(item)
         }
 
-        const response = await fetch(`https://9k7ig9gw8c.execute-api.us-east-1.amazonaws.com/default/grocery`, postOptions);
+        const response = await fetch(`${url}/grocery`, postOptions);
         const data = await response.json();
         return data;
     }
@@ -40,7 +42,7 @@ export const editGroceryItem = async (item) => {
             body: JSON.stringify(item)
         }
 
-        const response = await fetch(`https://9k7ig9gw8c.execute-api.us-east-1.amazonaws.com/default/grocery`, putOptions);
+        const response = await fetch(`${url}/grocery`, putOptions);
         const data = await response.json();
         return data;
     }
@@ -59,7 +61,7 @@ export const deleteGroceryItem = async (item) => {
             }
         }
 
-        const response = await fetch(`https://9k7ig9gw8c.execute-api.us-east-1.amazonaws.com/default/grocery/${item.grocery_id}?email=${item.email}`, deleteOptions);
+        const response = await fetch(`${url}/grocery/${item.grocery_id}?email=${item.email}`, deleteOptions);
         const data = await response.json();
         return data;
     }

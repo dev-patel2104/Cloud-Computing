@@ -41,30 +41,8 @@ Resources:
   GrocerySNSTopic:
     Type: 'AWS::SNS::Topic'
     Properties:
-      DisplayName: 'ProjectTopic'
-      TopicName: 'ProjectTopic'
-
-  DailyTriggerEventBridgeRule:
-    Type: 'AWS::Events::Rule'
-    Properties:
-      Name: 'daily-timer'
-      Description: 'Trigger Lambda once every day'
-      ScheduleExpression: 'rate(1 day)'
-      State: 'ENABLED'
-      Targets: 
-        - Arn: !GetAtt ExpiryReminderLambda.Arn
-          Id: 'first'
-
-  FiveMinutesTriggerEventBridgeRule:
-    Type: 'AWS::Events::Rule'
-    Properties:
-      Name: 'five-minutes-timer'
-      Description: 'Trigger Lambda once every day'
-      ScheduleExpression: 'rate(5 minutes)'
-      State: 'ENABLED'
-      Targets: 
-        - Arn: !GetAtt ExpiryReminderLambda.Arn
-          Id: 'second'
+      DisplayName: 'GroceryTopic'
+      TopicName: 'GroceryTopic'
 
   GroceryAddLambda:
     Type: AWS::Lambda::Function
@@ -180,6 +158,25 @@ Resources:
       FunctionName: !GetAtt UserGetByEmailLambda.Arn
       Principal: apigateway.amazonaws.com
 
+  UserDeleteLambda:
+    Type: AWS::Lambda::Function
+    Properties:
+      FunctionName: UserDelete
+      Handler: index.handler
+      Role: arn:aws:iam::579043522960:role/LabRole
+      Runtime: nodejs20.x
+      Timeout: 60
+      Code:
+        S3Bucket: code-b00934576
+        S3Key: user-delete.zip
+  
+  UserDeleteLambdaInvokePermission:
+    Type: AWS::Lambda::Permission
+    Properties:
+      Action: lambda:InvokeFunction
+      FunctionName: !GetAtt UserDeleteLambda.Arn
+      Principal: apigateway.amazonaws.com
+
   ExpiryReminderLambda:
     Type: AWS::Lambda::Function
     Properties:
@@ -222,25 +219,6 @@ Resources:
     Properties:
       Action: lambda:InvokeFunction
       FunctionName: !GetAtt SubscribeLambda.Arn
-      Principal: apigateway.amazonaws.com
-
-  UserDeleteLambda:
-    Type: AWS::Lambda::Function
-    Properties:
-      FunctionName: UserDelete
-      Handler: index.handler
-      Role: arn:aws:iam::579043522960:role/LabRole
-      Runtime: nodejs20.x
-      Timeout: 60
-      Code:
-        S3Bucket: code-b00934576
-        S3Key: user-delete.zip
-  
-  UserDeleteLambdaInvokePermission:
-    Type: AWS::Lambda::Permission
-    Properties:
-      Action: lambda:InvokeFunction
-      FunctionName: !GetAtt UserDeleteLambda.Arn
       Principal: apigateway.amazonaws.com
 
   ProjectApi:
@@ -429,3 +407,76 @@ Resources:
       RouteKey: "POST /subscribe"
       AuthorizationType: NONE
       Target: !Sub "integrations/${SubscribeIntegration}"
+
+  DailyTriggerEventBridgeRule:
+    Type: 'AWS::Events::Rule'
+    Properties:
+      Name: 'daily-timer'
+      Description: 'Trigger Lambda once every day'
+      ScheduleExpression: 'rate(1 day)'
+      State: 'ENABLED'
+      Targets: 
+        - Arn: !GetAtt ExpiryReminderLambda.Arn
+          Id: 'first'
+
+  FiveMinutesTriggerEventBridgeRule:
+    Type: 'AWS::Events::Rule'
+    Properties:
+      Name: 'five-minutes-timer'
+      Description: 'Trigger Lambda once every day'
+      ScheduleExpression: 'rate(5 minutes)'
+      State: 'ENABLED'
+      Targets: 
+        - Arn: !GetAtt ExpiryReminderLambda.Arn
+          Id: 'second'
+
+  securitygroupec2:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: "Grocery EC2"
+      GroupName: ec2securitygroup
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 80
+          ToPort: 80
+          CidrIp: 0.0.0.0/0
+        - IpProtocol: tcp
+          FromPort: 443
+          ToPort: 443
+          CidrIp: 0.0.0.0/0
+        - IpProtocol: tcp
+          FromPort: 3000
+          ToPort: 3000
+          CidrIp: 0.0.0.0/0
+
+  groceryec2:
+    Type: AWS::EC2::Instance
+    DependsOn:
+      - grocerygateway
+    Properties:
+      ImageId: ami-053b0d53c279acc90
+      InstanceType: t2.micro
+      KeyName: vockey
+      SecurityGroups:
+        - !Ref securitygroupec2
+      UserData:
+        Fn::Base64: |
+          #!/bin/bash
+          sudo yum update -y
+          sudo yum install git -y
+          git clone https://github.com/dev-patel2104/GroceryList.git
+          cd GroceryList/Term_Project/frontend
+          curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.5/install.sh | bash
+          . ~/.nvm/nvm.sh
+          nvm install --lts
+          sudo yum install awscli -y
+          sudo yum install jq -y
+          aws configure set aws_access_key_id ASIAYNUNO7GIBSM5FCHC
+          aws configure set aws_secret_access_key YAHiMCQfsR1fIKx738uuldXZCp+Cn6DN/v6BuTnC
+          aws configure set aws_session_token FwoGZXIvYXdzEFQaDEyon+JKsaOyyRcDRiLAAc0nnoDKyiNtzzfxQcBFfnX60Kyuw0n50fjaKggAn0OaG/Nyj7vRlPNYGH8FMxpntdViEji111RPnQ+eWix+pQk2rORYKlyMX8h9kYRwCLxaofBs4B1E8JxdTiJynN81Pw/H1atKUG8vK0Vsvn7ytDe7L0XZYcYgV0rM8BI9VTSpsXzuTKDjwf1rmlP6LiHgs2GuAdYdYqxiGFb9m/r+JWbNWlEjuuD6WUGpz6LW6O/J4Xsiurh3eVt3hXregO5MGyj794+rBjIt3eNTV5ARGC8U/9ACkXW8oXZgxUSpAmKs3SzEt99RnyV2R0b4fiED8CBWdLFX
+          aws configure set region us-east-1
+          gatewayid=$(aws apigateway get-rest-apis | jq -r '.items[] | select(.name=="ProjectApi") | .id')
+          REACT_APP_API_GATEWAY_URL="REACT_APP_API_GATEWAY_URL=https://${gatewayid}.execute-api.us-east-1.amazonaws.com/default"
+          echo $REACT_APP_API_GATEWAY_URL >> .env
+          npm install
+          npm start
