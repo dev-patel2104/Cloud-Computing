@@ -3,7 +3,7 @@ import { DynamoDBClient, ScanCommand } from "@aws-sdk/client-dynamodb";
 import { promisify } from 'util';
 
 const sns = new SNS({});
-const topicARN = 'arn:aws:sns:us-east-1:579043522960:ProjectTopic'; // change this value of topic arn from env
+const topicARN = process.env.sns; // change this value of topic arn from env
 const dynamoDB = new DynamoDBClient({ region: "us-east-1" });
 
 const scanAsync = promisify(dynamoDB.send).bind(dynamoDB);

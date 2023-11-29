@@ -3,7 +3,7 @@ import { SNS } from "@aws-sdk/client-sns";
 import { promisify } from 'util';
 
 const sns = new SNS({})
-const topicArn = 'arn:aws:sns:us-east-1:579043522960:ProjectTopic'; // change and fetch the value from actual sns topic
+const topicArn = process.env.sns; // change and fetch the value from actual sns topic
 
 export const handler = async (event) => {
 
