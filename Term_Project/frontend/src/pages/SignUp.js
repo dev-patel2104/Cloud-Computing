@@ -3,7 +3,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEnvelope, faKey } from '@fortawesome/free-solid-svg-icons';
 import homeImage from '../assets/home.svg';
 import { NavLink, useNavigate } from 'react-router-dom';
-import { addUser } from '../services/UserManagementServices';
+import { addUser, subscribe } from '../services/UserManagementServices';
 import md5 from "md5";
 
 function SignUp() {
@@ -63,6 +63,7 @@ function SignUp() {
                 setEmail('');
             }
             else {
+                const res = await subscribe(user);
                 localStorage.setItem('email', email);
                 navigate('/groceries');
             }

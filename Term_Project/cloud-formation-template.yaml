@@ -472,9 +472,9 @@ Resources:
           sudo apt install npm -y
           sudo apt-get install -y awscli
           sudo apt-get install jq -y
-          aws configure set aws_access_key_id ASIAYNUNO7GIIBUEOK6T
-          aws configure set aws_secret_access_key nKMm9lZ60pr+diZuQalBDTuXlDY9bBkSE9z610DT
-          aws configure set aws_session_token FwoGZXIvYXdzEGMaDPgerxI9fn7cZdHtxiLAAcYOc5+pi4Q38O/ioUYJzw2WEAZDNFALFHNJ0ge658iV+S+Io3tQ60P51/nfm5pfRLmmzBXSM1zcZTeAhQjxHtpuvqbQ+mI0+BAGuXQvg48ns0anuAlGscZoFpCmAw/fOOEpMjAnqCyEoJHlu8hOlesSrM1RP4SIEY34sqnnX5MSwh9kaWRJqMT7xqT6PzMuCSGJxPzEV2tXhOKvcPFYPoGwfcmWsli5HVXSao04nw0ZL+lR7w83ehnbPfTPSyp57SjWmZOrBjItkTWmSsexuIQk3FzdYxUfmffxG1d3z/snN0slGFwLXQuYrvJ2PHN/VExddQbB
+          aws configure set aws_access_key_id ASIAYNUNO7GIH2GXA4UJ
+          aws configure set aws_secret_access_key FzXbdtlOTvc4a0QxvutjxZzr4+rahyTQw7rfx12l
+          aws configure set aws_session_token FwoGZXIvYXdzEIX//////////wEaDLtE4J/wCAzHMpVAeCLAAdb+jjV34faD8Om4BkhkZhOso3P3Z4ghAcanEXnz3A546CAA8O1JYzuTeZD+vuKloih5ody0bMuQpVRCuQYZMtdg+nJiU2BHvBbz9f6/WIDpdH8q2UFN08t+yJW/kUzM5NdlTISAaCRaCE+LqKd/9MyXrMS1jSmtIj7m9CwL8cpCs1P3D+vR/rUnXZwEXl/kpVJURzLA9ZGdoMtDR/DM7vwUUwHA/eihfIZzOnKESEMQf1t984nyhYkEcKBz65NBayiD15qrBjItZB0/kgvzzYT6yCbPiYijDpThy6IxSDX5Ib+46LmvUfOEG/IzAAtzqybfwlQ6
           aws configure set region us-east-1
           gatewayid=$(aws apigatewayv2 get-apis | jq -r '.Items[] | select(.Name=="ProjectApi") | .ApiId')
           REACT_APP_API_GATEWAY_URL="REACT_APP_API_GATEWAY_URL=https://${gatewayid}.execute-api.us-east-1.amazonaws.com/default"

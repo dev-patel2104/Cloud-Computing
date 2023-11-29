@@ -31,3 +31,23 @@ export const addUser = async (item) => {
         return null;
     }
 }
+
+export const subscribe = async (item) => {
+    try {
+        const postOptions = {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(item)
+        }
+
+        const response = await fetch(`${url}/subscribe`, postOptions);
+        const data = await response.json();
+        return data;
+    }
+    catch (error) {
+        console.error('Error while sending the subscribe request to the user');
+        return null;
+    }
+}
